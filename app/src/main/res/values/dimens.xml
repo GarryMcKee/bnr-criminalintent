@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="crime_fragment_margin">16dp</dimen>
+    <dimen name="crime_list_item_padding">8dp</dimen>
 </resources>
