@@ -45,9 +45,21 @@ public class CrimeListFragment extends Fragment {
         public int getItemCount() {
             return mCrimes.size();
         }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (mCrimes.get(position).requiresPolice()) {
+                return CrimeHolder.SERIOUS_CRIME_TYPE;
+            } else {
+                return CrimeHolder.NORMAL_CRIME_TYPE;
+            }
+        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+        private static final int NORMAL_CRIME_TYPE = 9998;
+        private static final int SERIOUS_CRIME_TYPE = 9999;
 
         private Crime mCrime;
 
