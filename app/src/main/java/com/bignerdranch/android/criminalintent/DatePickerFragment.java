@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +26,8 @@ import java.util.GregorianCalendar;
  * Created by Garry on 02/05/2017.
  */
 
-public class DatePickerFragment  extends DialogFragment{
-    public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
+public class DatePickerFragment  extends DialogFragment {
+    public static final String EXTRA_DATE = "com.bignerdranch.criminalintent.date";
 
     private static final String ARG_DATE = "date";
 
@@ -38,6 +40,7 @@ public class DatePickerFragment  extends DialogFragment{
 
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -74,13 +77,16 @@ public class DatePickerFragment  extends DialogFragment{
     }
 
     private void sendResult(int resultCode, Date date) {
-        if (getTargetFragment() == null) {
-            return;
-        }
-
         Intent intent = new Intent();
         intent.putExtra(EXTRA_DATE, date);
 
-        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        if (getTargetFragment() == null) {
+            getActivity().setResult(Activity.RESULT_OK, intent);
+        } else {
+            getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        }
+
+        getActivity().finish();
+
     }
 }
