@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +31,15 @@ public class DatePickerFragment  extends DialogFragment {
     public static final String EXTRA_DATE = "com.bignerdranch.criminalintent.date";
 
     private static final String ARG_DATE = "date";
+    private static final String ARG_IS_DIALOG = "is_dialog";
 
     private DatePicker mDatePicker;
     private Button mDateOkButton;
 
-    public static DatePickerFragment newInstance(Date date) {
+    public static DatePickerFragment newInstance(Date date, boolean isDialog) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
+        args.putBoolean(ARG_IS_DIALOG, isDialog);
 
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.setArguments(args);
@@ -47,6 +50,12 @@ public class DatePickerFragment  extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if(getArguments().getBoolean(ARG_IS_DIALOG)) {
+            return null;
+        }
+
+        Log.d("CHECKONCREATE", "in onCreateView()");
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
         Calendar calendar = Calendar.getInstance();
@@ -79,6 +88,7 @@ public class DatePickerFragment  extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d("CHECKONCREATE", "in onCreateDialog()");
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
         Calendar calendar = Calendar.getInstance();
@@ -114,11 +124,12 @@ public class DatePickerFragment  extends DialogFragment {
 
         if (getTargetFragment() == null) {
             getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+
         } else {
             getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
         }
 
-        getActivity().finish();
 
     }
 }

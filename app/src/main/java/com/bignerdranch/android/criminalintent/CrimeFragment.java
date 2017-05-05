@@ -87,9 +87,9 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Configuration config = getActivity().getResources().getConfiguration();
-                if(config.screenLayout == config.SCREENLAYOUT_SIZE_LARGE) {
+                if(config.smallestScreenWidthDp >= 600) {
                     FragmentManager fragmentManager = getFragmentManager();
-                    DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                    DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate(), true);
                     dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                     dialog.show(fragmentManager, DIALOG_DATE);
                 } else {
