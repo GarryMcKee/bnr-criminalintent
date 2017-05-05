@@ -11,4 +11,5 @@
     <string name="hide_subtitle">Hide Subtitle</string>
     <string name="subtitle_format">%1$d crimes</string>
     <string name="no_crimes_message">No Crimes Yet!</string>
+    <string name="add_crime">Add Crime</string>
 </resources>
