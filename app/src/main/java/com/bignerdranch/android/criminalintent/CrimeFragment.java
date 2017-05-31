@@ -174,6 +174,7 @@ public class CrimeFragment extends Fragment {
                 String suspect = c.getString(0);
                 String suspectId = c.getString(1);
                 mCrime.setSuspect(suspect);
+                mCrime.setSuspectId(suspectId);
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();
