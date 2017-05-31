@@ -76,6 +76,7 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
 
+        mCallSuspectButton = (Button) v.findViewById(R.id.call_suspect);
         mTitleField = (EditText) v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -141,6 +142,7 @@ public class CrimeFragment extends Fragment {
 
         if (mCrime.getSuspect() != null) {
             mSuspectButton.setText(mCrime.getSuspect());
+            mCallSuspectButton.setEnabled(true);
         }
 
         PackageManager packageManager = getActivity().getPackageManager();
@@ -149,7 +151,6 @@ public class CrimeFragment extends Fragment {
             mSuspectButton.setEnabled(false);
         }
 
-        mCallSuspectButton = (Button) v.findViewById(R.id.call_suspect);
         mCallSuspectButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,6 +243,7 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSuspect(suspect);
                 mCrime.setSuspectId(suspectId);
                 mSuspectButton.setText(suspect);
+                mCallSuspectButton.setEnabled(true);
             } finally {
                 c.close();
             }
