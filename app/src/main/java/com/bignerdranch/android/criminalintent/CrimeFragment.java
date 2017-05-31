@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,10 +23,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.net.URI;
 import java.util.Date;
 import java.util.UUID;
+import java.util.jar.Manifest;
 
 import static android.widget.CompoundButton.*;
 
@@ -39,6 +43,7 @@ public class CrimeFragment extends Fragment {
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
     private Crime mCrime;
 
@@ -47,6 +52,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private Button mSuspectButton;
     private Button mReportButton;
+    private Button mCallSuspectButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -142,7 +148,63 @@ public class CrimeFragment extends Fragment {
                 packageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
+
+        mCallSuspectButton = (Button) v.findViewById(R.id.call_suspect);
+        mCallSuspectButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //CrimeTable.Cols.UUID + " = ?", new String[] {id.toString()}
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                        getActivity().checkSelfPermission(android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("CALLSUSPECT", "Launching Permission Request");
+                    requestPermissions(new String[]{android.Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+                } else {
+                    callSuspect();
+                }
+            }
+        });
+
         return v;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                callSuspect();
+            } else {
+                Toast.makeText(getContext(), "PLEASE GRANT READ CONTACT PERMISSION", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void callSuspect() {
+
+        String number;
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] queryFields = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+        Cursor c = getActivity().getContentResolver()
+                .query(
+                        uri,
+                        queryFields,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                        new String[] {mCrime.getSuspectId()},
+                        null);
+
+
+        try {
+            if (c.getCount() == 0) {
+                return;
+            }
+
+            c.moveToFirst();
+            number = c.getString(0);
+        } finally {
+            c.close();
+        }
+
+
     }
 
     @Override
