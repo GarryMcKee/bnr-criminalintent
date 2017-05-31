@@ -204,6 +204,10 @@ public class CrimeFragment extends Fragment {
             c.close();
         }
 
+        Uri numberUri = Uri.parse("tel:" + number);
+        Intent intent = new Intent(Intent.ACTION_DIAL, numberUri);
+        startActivity(intent);
+
 
     }
 
