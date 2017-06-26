@@ -17,9 +17,11 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -46,7 +48,7 @@ public class CrimeFragment extends Fragment {
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
-    private static final int REQUEST_PHOTO= 2;
+    private static final int REQUEST_PHOTO = 2;
 
     private Crime mCrime;
     private File mPhotoFile;
@@ -178,7 +180,12 @@ public class CrimeFragment extends Fragment {
             }
         });
         mPhottoView = (ImageView) v.findViewById(R.id.crime_photo);
-        updatePhotoView();
+        mPhottoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                updatePhotoView();
+            }
+        });
 
         return v;
     }
@@ -195,7 +202,7 @@ public class CrimeFragment extends Fragment {
             updateDate();
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData();
-            String[] queryFields = new String[] {
+            String[] queryFields = new String[]{
                     ContactsContract.Contacts.DISPLAY_NAME
             };
 
@@ -235,7 +242,7 @@ public class CrimeFragment extends Fragment {
 
     private String getCrimeReport() {
         String solvedString = null;
-        if(mCrime.isSolved()) {
+        if (mCrime.isSolved()) {
             solvedString = getString(R.string.crime_report_solved);
         } else {
             solvedString = getString(R.string.crime_report_unsolved);
@@ -245,7 +252,7 @@ public class CrimeFragment extends Fragment {
         String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
 
         String suspect = mCrime.getSuspect();
-        if(suspect == null) {
+        if (suspect == null) {
             suspect = getString(R.string.crime_report_no_suspect);
         } else {
             suspect = getString(R.string.crime_report_suspect, suspect);
@@ -260,8 +267,9 @@ public class CrimeFragment extends Fragment {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhottoView.setImageDrawable(null);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), mPhottoView.getWidth(), mPhottoView.getHeight());
             mPhottoView.setImageBitmap(bitmap);
         }
     }
+
 }
