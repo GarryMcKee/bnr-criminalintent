@@ -17,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_PHOTO_DETAIL = "DialogPhotoDetail";
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
@@ -178,6 +180,16 @@ public class CrimeFragment extends Fragment {
             }
         });
         mPhottoView = (ImageView) v.findViewById(R.id.crime_photo);
+        mPhottoView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                CrimePhotoDetailDialog photoDetailDialog =
+                        CrimePhotoDetailDialog
+                                .newInstance(mCrime.getId());
+                photoDetailDialog.show(fm, DIALOG_PHOTO_DETAIL);
+            }
+        });
         updatePhotoView();
 
         return v;
