@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -146,9 +148,39 @@ public class CrimeListFragment extends Fragment {
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
         private List<Crime> mCrimes;
+        private ItemTouchHelper mItemTouchHelper;
 
-        public CrimeAdapter(List<Crime> crimes) {
+        public CrimeAdapter(final List<Crime> crimes) {
             mCrimes = crimes;
+            mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+
+
+                @Override
+                public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                    int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                    int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+                    return makeMovementFlags(dragFlags, swipeFlags);
+                }
+
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    Crime crime = crimes.get(viewHolder.getLayoutPosition());
+
+                    Log.d("CHECKSWIPE", "DIRECTION: " + "Right");
+                    CrimeLab.get(getActivity()).deleteCrime(crime);
+                    mCrimes.remove(crime);
+                    notifyItemRemoved(viewHolder.getLayoutPosition());
+                    updateUi();
+                    mCrimeRecyclerView.setAdapter(CrimeAdapter.this);
+                }
+            });
+            mItemTouchHelper.attachToRecyclerView(mCrimeRecyclerView);
         }
 
         @Override
@@ -195,12 +227,14 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView.setText(crime.getTitle());
             mDateTextView.setText(crime.getDate().toString());
             mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
+
         }
 
         @Override
         public void onClick(View v) {
             mCallbacks.onCrimeSelected(mCrime);
         }
+
     }
 
 }
