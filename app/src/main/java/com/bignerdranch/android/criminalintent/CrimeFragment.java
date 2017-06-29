@@ -32,6 +32,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static android.widget.CompoundButton.*;
@@ -256,7 +257,9 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+        java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM, Locale.getDefault());
+        String dateString = df.format(mCrime.getDate());
+        mDateButton.setText(dateString);
     }
 
     private String getCrimeReport() {
@@ -267,8 +270,8 @@ public class CrimeFragment extends Fragment {
             solvedString = getString(R.string.crime_report_unsolved);
         }
 
-        String dateFormat = "EEE MMM dd";
-        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
+        java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM, Locale.getDefault());
+        String dateString = df.format(mCrime.getDate());
 
         String suspect = mCrime.getSuspect();
         if(suspect == null) {
