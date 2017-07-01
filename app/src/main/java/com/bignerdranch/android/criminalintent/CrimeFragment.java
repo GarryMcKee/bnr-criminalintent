@@ -198,6 +198,11 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
@@ -231,9 +236,15 @@ public class CrimeFragment extends Fragment {
         } else if (requestCode == REQUEST_PHOTO) {
             Uri uri = FileProvider.getUriForFile(getActivity(), "com.bignerdranch.android.criminalintent.fileprovider", mPhotoFile);
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
             updateCrime();
             updatePhotoView();
+
+            mPhottoView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mPhottoView.announceForAccessibility("Photo has been updated");
+                }
+            }, 1000);
         }
     }
 
